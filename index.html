@@ -125,7 +125,7 @@ summary{cursor:pointer;font-weight:500}
   <div class="grid-f">
     <div class="f"><label for="sChannel">Channel</label><select id="sChannel"><option value="phone">Phone</option><option value="chat">Chat</option></select></div>
     <div class="f"><label for="sModel">Model</label><select id="sModel"><option value="A">Erlang X (hang-ups)</option><option value="C">Erlang C (no hang-ups)</option></select></div>
-    <div class="f"><label for="sAht">Average handle time (min)</label><input id="sAht" type="number" min="1" max="120" step="0.5" value="15"></div>
+    <div class="f"><label for="sAht">Average handle time (min)</label><input id="sAht" type="number" min="1" max="120" step="0.5" value="8"></div>
     <div class="f"><label for="sTarget">Target: % answered</label><input id="sTarget" type="number" min="1" max="99" step="1" value="80"></div>
     <div class="f"><label for="sT">within (seconds)</label><input id="sT" type="number" min="1" max="600" step="1" value="30"></div>
     <div class="f"><label for="sPat">Patience before hang-up (min)</label><input id="sPat" type="number" min="1" max="120" step="1" value="15"></div>
@@ -398,7 +398,7 @@ const num = (id, d) => { const v = parseFloat($(id).value); return Number.isFini
 function st() {
   return {
     model: $('sModel').value,
-    aht: Math.max(1, num('sAht', 15)) * 60,
+    aht: Math.max(1, num('sAht', 8)) * 60,
     target: clamp(num('sTarget', 80), 1, 99),
     T: Math.max(1, num('sT', 30)),
     pat: Math.max(1, num('sPat', 15)) * 60,
@@ -667,7 +667,7 @@ function refresh() { later(() => RUN[current]()); }
 function setSettings(o) { Object.entries(o).forEach(([k, v]) => { $(k).value = v; }); syncModel(); refreshHint(); RUN[current](); }
 function syncModel() { $('sPat').disabled = $('sModel').value !== 'A'; }
 function refreshHint() {
-  const a = num('sAht', 15);
+  const a = num('sAht', 8);
   $('ahtHint').textContent = `PureCloud 2026 shows phone calls lasting about 8 minutes on average (8.1 on Tier I student phones, 9.4 on faculty and staff). The client quoted 15 minutes. You have ${a} minutes set. Use the buttons above to compare the two.`;
 }
 document.addEventListener('DOMContentLoaded', () => {
