@@ -132,6 +132,7 @@ details .f{margin-top:8px}
     <div class="f"><label for="sOcc">Max occupancy (%)</label><input id="sOcc" type="number" min="50" max="100" step="1" value="100"></div>
   </div>
   <p class="hint" id="ahtHint"></p>
+  <p class="hint" id="chanBanner" hidden style="font-weight:600;border-left:3px solid #b45309;padding-left:10px"></p>
 </section>
 
 <nav class="tabs" role="tablist" aria-label="Calculator sections">
@@ -865,7 +866,11 @@ function setSettings(o) { Object.entries(o).forEach(([k, v]) => { $(k).value = v
 function syncModel() { $('sPat').disabled = $('sModel').value !== 'A'; }
 function refreshHint() {
   const a = num('sAht', 8);
-  const chatNote = $('sChannel').value === 'chat' ? ' CHAT IS PROVISIONAL: the chat settings (handle time, one chat per agent, hang-up patience) are not validated against past chat wait times yet. Treat chat results as a rough scenario, not a recommendation.' : '';
+  const isChat = $('sChannel').value === 'chat';
+  const bn = $('chanBanner');
+  bn.hidden = !isChat;
+  bn.textContent = isChat ? 'Chat selected. Handle time was set to 24 minutes (a provisional guess from the 22 to 27 minute range in our chat model; type your own if you know it). The forecasts on Plan by date, Next day, Next week, Staffing vs wait time and 2027 answers are built from PHONE ticket history, so they are not chat forecasts. Switch Channel back to Phone for the validated numbers.' : '';
+  const chatNote = isChat ? ' CHAT IS PROVISIONAL: the chat settings (handle time, one chat per agent, hang-up patience) are not validated against past chat wait times yet. Treat chat results as a rough scenario, not a recommendation.' : '';
   $('ahtHint').textContent = `PureCloud 2026 shows phone calls lasting about 8 minutes on average (8.1 on Tier I student phones, 9.4 on faculty and staff). The client quoted 15 minutes. You have ${a} minutes set. Use the buttons above to compare the two.${chatNote}`;
 }
 document.addEventListener('DOMContentLoaded', () => {
@@ -885,7 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => { location.hash = b.dataset.tab; }));
   window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
   ['sModel', 'sAht', 'sTarget', 'sT', 'sPat', 'sConc', 'sShr', 'sOcc'].forEach((id) => $(id).addEventListener('input', () => { syncModel(); refreshHint(); refresh(); }));
-  $('sChannel').addEventListener('change', () => { $('sConc').value = 1; refreshHint(); refresh(); });
+  $('sChannel').addEventListener('change', () => { const chat = $('sChannel').value === 'chat'; $('sConc').value = 1; $('sAht').value = chat ? 24 : 8; refreshHint(); refresh(); });
   $('pClient').addEventListener('click', () => setSettings({ sAht: 15, sTarget: 80, sT: 30, sPat: 15, sModel: 'A', sShr: 30, sOcc: 100 }));
   $('pActual').addEventListener('click', () => setSettings({ sAht: 8, sTarget: 80, sT: 30, sPat: 15, sModel: 'A', sShr: 30, sOcc: 100 }));
   ['cCalls', 'cLen', 'cHave', 'vCalls', 'vNow', 'vStu', 'vAdd', 'wHrs'].forEach((id) => $(id).addEventListener('input', refresh));
